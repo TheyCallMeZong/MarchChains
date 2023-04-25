@@ -3,17 +3,28 @@ package com.example.marchchainsv2;
 import java.util.List;
 import java.util.concurrent.Exchanger;
 
-//Когда вводим одну букву, нам дается подсказка на ввод необходимого слова
+/**
+ * Класс для подсказки слова по буквам
+ */
 public class SpellChain extends Chain{
+    /**
+     * Конструктор
+     */
     public SpellChain(List<String> words, Exchanger<String> exchanger) {
         super(words, exchanger);
     }
 
+    /**
+     * Имплементация метода тренировки
+     */
     @Override
     public void train() {
         forecast();
     }
 
+    /**
+     * Имплементация слушателя
+     */
     @Override
     public synchronized void forecast() {
         while (true) {
