@@ -16,7 +16,7 @@ import java.util.concurrent.Exchanger;
  */
 public class MainController {
     //путь до данных для обучения
-    private static final String fileName = "train.txt";
+    private static final String fileName = "test.txt";
     private static final List<Chain> chains = new ArrayList<>();
     //Поле для ввода
     @FXML
@@ -43,8 +43,21 @@ public class MainController {
     public MainController() throws IOException {
         //получаем содержимое файла, удаляя все пробелы и "—"
         var content = Arrays.stream(Files.lines(Paths.get(fileName)).reduce("", String::concat)
-                        .split(" ")).filter(x -> !x.isEmpty() && !x.equals("—")).toList();
-
+                        .split(" "))
+                        .filter(x -> !x.isEmpty() && !x.equals("—"))
+                        .map(x -> x.replace(";", ""))
+                        .map(x -> x.replace(",", ""))
+                        .map(x -> x.replace(".", ""))
+                        .map(x -> x.replace("!", ""))
+                        .map(x -> x.replace("…", ""))
+                        .map(x -> x.replace(":", ""))
+                        .map(x -> x.replace("?", ""))
+                        .map(x -> x.replace("«", ""))
+                        .map(x -> x.replace("»", ""))
+                        .map(x -> x.replace("(", ""))
+                        .map(x -> x.replace(")", ""))
+                        .map(String::toLowerCase)
+                        .toList();
         //запускаем потоки для "обучения" на нашем тексте
         //класс для обмена данными между потоками
         Exchanger<String> exchanger = new Exchanger<>();

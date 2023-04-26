@@ -36,4 +36,9 @@ public class SpellChain extends Chain{
             }
         }
     }
+
+    @Override
+    protected String update(String word, String[] pattern) {
+        return null;
+    }
 }
