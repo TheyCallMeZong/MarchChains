@@ -9,23 +9,14 @@ import java.util.concurrent.Exchanger;
  * Абстрактный класс с общими данными для Марковских цепей
  */
 public abstract class Chain extends Thread {
-    //Натренированные данные
-    protected Map<String, List<String>> data;
     //Исходные данные
-    protected List<String> words;
+    protected final List<String> words;
+
+    //Для обмена между потоками
+    protected final Exchanger<String> exchanger;
+
     //Текущее слово
     protected String message;
-    //Для обмена между потоками
-    protected Exchanger<String> exchanger;
-    //окончания слов
-    protected final String[] endings = {
-            "ями", "ому", "ая", "ые",  "ий", "ии", "ов", "ие", "ой", "ую", "ых", "ом", "ым", "ого", "ей",
-            "ое", "ть",  "у",
-    };
-    //суффиксы слов
-    protected final String[] suffix = {"еньк", "оват", "овит", "енок", "онок", "ива", "ыва", "ева", "онк", "чик", "лив", "щик", "ичк",
-            "ышк", "ушк", "ова", "ств", "ниц", "енн", "ущ", "ющ", "ящ", "ющ", "нн", "вш", "ут", "ек",
-            "ик", "ив", "ов", "ев", "а", "ш", "о", "е", "я", "и", "е", "у"};
 
     /**
      * Добавлеям сообщение
@@ -41,7 +32,6 @@ public abstract class Chain extends Thread {
     public Chain(List<String> words, Exchanger<String> exchanger) {
         this.words = words;
         this.exchanger = exchanger;
-        this.data = new HashMap<>();
     }
 
     /**
@@ -62,5 +52,28 @@ public abstract class Chain extends Thread {
      */
     public abstract void forecast();
 
-    protected abstract String update(String word, String[] pattern);
+    /**
+     * сортировка по частоте появления
+     * @param data входные данные
+     */
+    protected void sort(Map<String, List<String>> data){
+        for (Map.Entry<String, List<String>> entry : data.entrySet()) {
+            List<String> sheet = entry.getValue();
+            HashMap<String, Integer> wordFreqMap = new HashMap<>();
+
+            for (String word : sheet) {
+                if (wordFreqMap.containsKey(word)) {
+                    wordFreqMap.put(word, wordFreqMap.get(word) + 1);
+                } else {
+                    wordFreqMap.put(word, 1);
+                }
+            }
+
+            sheet.sort((word1, word2) -> {
+                int freq1 = wordFreqMap.get(word1);
+                int freq2 = wordFreqMap.get(word2);
+                return Integer.compare(freq2, freq1);
+            });
+        }
+    }
 }
